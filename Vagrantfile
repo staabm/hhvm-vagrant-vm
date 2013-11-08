@@ -5,22 +5,30 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $build_script = <<SCRIPT
-apt-get update
+
+echo prepare VM for regular hhvm install
+apt-get -y update
+apt-get -y install python-software-properties
+
+echo install apt-fast to speedup later dependency installation
+add-apt-repository -y ppa:apt-fast/stable
+apt-get -y install apt-fast
 
 echo Installing HHVM dependencies...
-apt-get install -y git-core cmake g++ libboost1.48-dev libmysqlclient-dev \
+apt-fast -y update
+apt-fast -y install git-core cmake g++ libboost1.48-dev libmysqlclient-dev \
   libxml2-dev libmcrypt-dev libicu-dev openssl build-essential binutils-dev \
   libcap-dev libgd2-xpm-dev zlib1g-dev libtbb-dev libonig-dev libpcre3-dev \
   autoconf libtool libcurl4-openssl-dev libboost-regex1.48-dev libboost-system1.48-dev \
   libboost-program-options1.48-dev libboost-filesystem1.48-dev libboost-thread1.48-dev \
   wget memcached libreadline-dev libncurses-dev libmemcached-dev libbz2-dev \
   libc-client2007e-dev php5-mcrypt php5-imagick libgoogle-perftools-dev \
-  libcloog-ppl0 libelf-dev libdwarf-dev subversion python-software-properties
+  libcloog-ppl0 libelf-dev libdwarf-dev subversion
 
 echo Upgrading gcc to 4.7
 add-apt-repository ppa:ubuntu-toolchain-r/test
-apt-get update
-apt-get install -y gcc-4.7 g++-4.7
+apt-fast -y update
+apt-fast -y install gcc-4.7 g++-4.7
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 \
                     --slave /usr/bin/g++ g++ /usr/bin/g++-4.7
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 \
@@ -28,7 +36,7 @@ update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 \
 update-alternatives --set gcc /usr/bin/gcc-4.7
 
 echo Installing nginx, php and other useful tools...
-apt-get install -y nginx-full \
+apt-fast -y install nginx-full \
   php5-cli php5-curl php5-fpm php5-gd php5-intl php5-json \
   php5-memcached php5-mysql php5-tidy php5-xsl php-apc \
   unzip apache2-utils
